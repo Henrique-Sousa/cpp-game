@@ -5,7 +5,7 @@ CC = g++
 .PHONY: all
 all: clean game run 
 
-game: main.o game.o
+game: main.o game.o character.o util.o
 	$(CC) $^ -o game $(LDFLAGS)
 
 %.o: %.cpp

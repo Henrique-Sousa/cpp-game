@@ -1,7 +1,10 @@
 #include <iostream>
 #include "game.h"
+#include <SDL2/SDL_image.h>
 
 using namespace std;
+
+Character* player;
 
 Game::Game()
   : window {nullptr},
@@ -17,11 +20,12 @@ Game::~Game()
   SDL_DestroyWindow(window);
 }
 
-void Game::init()
+void Game::init(string title)
 {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 
-  window = SDL_CreateWindow("Game",
+  window = SDL_CreateWindow(
+      title.c_str(),
       SDL_WINDOWPOS_CENTERED,
       SDL_WINDOWPOS_CENTERED,
       screen_width, screen_height, 0);
@@ -33,23 +37,46 @@ void Game::init()
 
   Uint32 render_flags = SDL_RENDERER_ACCELERATED;
   renderer = SDL_CreateRenderer(window, -1, render_flags);
+
+  SDL_Point origin = {0, 0};
+  player = new Character{"../assets/player.png", origin, renderer}; 
+
+  SDL_Rect dest;
+  SDL_QueryTexture(player->get_texture(), nullptr, nullptr, &dest.w, &dest.h);
+  player->set_position({0, screen_height - dest.h});
 }
 
-void Game::run()
+void Game::run(string title)
 {
-  init();
+  init(title);
   loop();
+  delete player;
 }
 
 void Game::loop()
 {
-  while (state != State::exit) {
-    process_input();
-    draw();
+  const int FPS = 60;
+  const int frameDelay = 1000 / FPS;
+
+  Uint32 frameStart;
+  int frameTime;
+  while (state != State::exit)
+  {
+    frameStart = SDL_GetTicks();
+
+    handle_events();
+    update();
+    render();
+
+    frameTime = SDL_GetTicks() - frameStart;
+
+    if (frameDelay > frameTime) {
+      SDL_Delay(frameDelay - frameTime);
+    }
   }
 }
 
-void Game::process_input()
+void Game::handle_events()
 {
   SDL_Event event;
   
@@ -64,9 +91,15 @@ void Game::process_input()
   }
 }
 
-void Game::draw()
+void Game::update()
+{
+  player->update();
+}
+
+void Game::render()
 {
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   SDL_RenderClear(renderer);
+  player->draw();
   SDL_RenderPresent(renderer);
 }

@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <SDL2/SDL.h>
+#include "character.h"
 
 enum class State { play, exit };
 
@@ -11,7 +12,7 @@ class Game
     Game();
     ~Game();
 
-    void run();
+    void run(string title);
 
   private:
     SDL_Window* window;
@@ -20,10 +21,11 @@ class Game
     int screen_height;
     State state;
 
-    void init();
+    void init(string title);
     void loop();
-    void process_input();
-    void draw();
+    void handle_events();
+    void update();
+    void render();
 };
 
 #endif // GAME_H

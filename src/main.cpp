@@ -1,9 +1,9 @@
 #include "game.h"
 
-int main() {
-
+int main()
+{
   Game game;
-  game.run();
+  game.run("Test");
 
   return 0;
 }
