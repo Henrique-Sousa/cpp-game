@@ -4,9 +4,10 @@
 #include <SDL2/SDL_image.h>
 
 Character::Character(const string texture_path, 
-    SDL_Point pos, SDL_Renderer* rend)
+    SDL_Point pos, int spd, SDL_Renderer* rend)
   : renderer {rend},
-    position {pos}
+    position {pos},
+    speed {spd}
 {
   texture = load_texture(texture_path, renderer);
 }
@@ -26,9 +27,33 @@ void Character::set_position(SDL_Point pos)
   position = pos;
 }
 
+void Character::move_right()
+{
+  mov_state = MovementState::right;
+}
+
+void Character::move_left()
+{
+  mov_state = MovementState::left;
+}
+
+void Character::stop()
+{
+  mov_state = MovementState::idle;
+}
+
 void Character::update()
 {
-  position.x++;
+  if (mov_state == MovementState::right) {
+    x_velocity = speed;
+  }
+  if (mov_state == MovementState::left) {
+    x_velocity = -speed;
+  }
+  if (mov_state == MovementState::idle) {
+    x_velocity = 0;
+  }
+  position.x += x_velocity;
 }
 
 void Character::draw() const

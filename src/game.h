@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include "character.h"
 
-enum class State { play, exit };
+enum class GameState { play, exit };
 
 class Game
 {
@@ -14,13 +14,16 @@ class Game
 
     void run(string title);
 
+    static bool left_btn_pressed;
+    static bool right_btn_pressed;
+
   private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     int screen_width;
     int screen_height;
-    State state;
-
+    GameState state;
+    
     void init(string title);
     void loop();
     void handle_events();

@@ -5,12 +5,14 @@
 using namespace std;
 
 Character* player;
+bool Game::right_btn_pressed = 0;
+bool Game::left_btn_pressed = 0;
 
 Game::Game()
   : window {nullptr},
     screen_width {640},
     screen_height {480},
-    state {State::play}
+    state {GameState::play}
 {
 }
 
@@ -39,7 +41,7 @@ void Game::init(string title)
   renderer = SDL_CreateRenderer(window, -1, render_flags);
 
   SDL_Point origin = {0, 0};
-  player = new Character{"../assets/player.png", origin, renderer}; 
+  player = new Character{"../assets/player.png", origin, 3, renderer}; 
 
   SDL_Rect dest;
   SDL_QueryTexture(player->get_texture(), nullptr, nullptr, &dest.w, &dest.h);
@@ -60,7 +62,7 @@ void Game::loop()
 
   Uint32 frameStart;
   int frameTime;
-  while (state != State::exit)
+  while (state != GameState::exit)
   {
     frameStart = SDL_GetTicks();
 
@@ -79,16 +81,44 @@ void Game::loop()
 void Game::handle_events()
 {
   SDL_Event event;
-  
+
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
       case SDL_QUIT:
-        state = State::exit;
+        state = GameState::exit;
+        break;
+      case SDL_KEYDOWN:
+        switch (event.key.keysym.scancode) {
+          case SDL_SCANCODE_RIGHT:
+            right_btn_pressed = true;
+            break;
+          case SDL_SCANCODE_LEFT:
+            left_btn_pressed = true;
+            break;
+          default:
+            break;
+        }
+        break;
+      case SDL_KEYUP:
+        switch (event.key.keysym.scancode) {
+          case SDL_SCANCODE_RIGHT:
+            right_btn_pressed = false;
+            break;
+          case SDL_SCANCODE_LEFT:
+            left_btn_pressed = false;
+            break;
+          default:
+            break;
+        }
         break;
       default:
         break;
     }
   }
+  
+  if (right_btn_pressed && ! left_btn_pressed) player->move_right();
+  else if (! right_btn_pressed && left_btn_pressed) player->move_left();
+  else player->stop();
 }
 
 void Game::update()
