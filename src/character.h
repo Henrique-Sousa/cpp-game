@@ -16,7 +16,7 @@ class Character
 
     void draw() const;
     void update();
-    SDL_Texture* get_texture();
+    SDL_Texture* get_texture() const;
     void set_position(SDL_Point);
     void move_right();
     void move_left();

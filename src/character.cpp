@@ -17,7 +17,7 @@ Character::~Character()
   SDL_DestroyTexture(texture);
 }
 
-SDL_Texture* Character::get_texture()
+SDL_Texture* Character::get_texture() const
 {
   return texture;
 }
